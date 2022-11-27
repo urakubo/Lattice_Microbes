@@ -173,6 +173,7 @@ struct gpu_worker_thread_params
 	uint8_t *dSites;
 	cudaStream_t stream1, stream2;
 	cudaEvent_t x_finish, diffusion_finished, rx_finish;
+	cudaEvent_t event_for_synchronize; //// 221123HU
 	unsigned int *h_overflows, *d_overflows;
 
 	// kernel launch params

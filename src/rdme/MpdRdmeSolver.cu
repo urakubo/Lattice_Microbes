@@ -94,10 +94,18 @@ using lm::rng::RandomGenerator;
 namespace lm {
 namespace rdme {
 
+//////
+//////221123 HU
+//////
+
 MpdRdmeSolver::MpdRdmeSolver()
-:RDMESolver(lm::rng::RandomGenerator::NONE),seed(0),cudaOverflowList(NULL),cudaStream(0),tau(0.0),overflowTimesteps(0),overflowListUses(0)
+:RDMESolver(lm::rng::RandomGenerator::NONE),seed(0),cudaOverflowList(NULL),cudaStream(0),event_for_synchronize(0),tau(0.0),overflowTimesteps(0),overflowListUses(0)
 {
 }
+
+//////
+////// event_for_synchronize(0) added
+//////
 
 void MpdRdmeSolver::initialize(unsigned int replicate, map<string,string> * parameters, ResourceAllocator::ComputeResources * resources)
 {
@@ -154,6 +162,15 @@ void MpdRdmeSolver::initialize(unsigned int replicate, map<string,string> * para
 
     // Create a stream for synchronizing the events.
     CUDA_EXCEPTION_CHECK(cudaStreamCreate(&cudaStream));
+
+    //////
+    //////221123 HU
+    //////
+    CUDA_EXCEPTION_CHECK(cudaEventCreate(&event_for_synchronize));
+    //////
+    //////221123 HU
+    //////
+
 }
 
 
@@ -169,6 +186,20 @@ MpdRdmeSolver::~MpdRdmeSolver()
 	#endif
         cudaOverflowList = NULL;
     }
+
+    //////
+    //////221123 HU
+    //////
+    // If we have created a event_for_synchronize, destroy it.
+    if (event_for_synchronize != 0)
+    {
+        CUDA_EXCEPTION_CHECK_NOTHROW(cudaEventDestroy(event_for_synchronize));
+        event_for_synchronize = NULL;
+    }
+    //////
+    //////
+    //////
+
 
     // If we have created a stream, destroy it.
     if (cudaStream != 0)
@@ -936,6 +967,7 @@ void MpdRdmeSolver::runTimestep(CudaByteLattice * lattice, uint32_t timestep)
     // Execute the kernel for the x direction.
     PROF_CUDA_START(cudaStream);
 
+
     PROF_CUDA_BEGIN(PROF_MPD_X_DIFFUSION,cudaStream);
     #ifdef MPD_CUDA_3D_GRID_LAUNCH
     calculateXLaunchParameters(&gridSize, &threadBlockSize, TUNE_MPD_X_BLOCK_MAX_X_SIZE, latticeXSize, latticeYSize, latticeZSize);
@@ -1013,8 +1045,18 @@ void MpdRdmeSolver::runTimestep(CudaByteLattice * lattice, uint32_t timestep)
 
     // Wait for the kernels to complete.
     PROF_BEGIN(PROF_MPD_SYNCHRONIZE);
-    CUDA_EXCEPTION_CHECK(cudaStreamSynchronize(cudaStream));
+    // CUDA_EXCEPTION_CHECK(cudaStreamSynchronize(cudaStream));
+    //////
+    //////221123 HU
+    //////
+    CUDA_EXCEPTION_CHECK(cudaEventRecord(event_for_synchronize, cudaStream));
+    CUDA_EXCEPTION_CHECK(cudaStreamWaitEvent(cudaStream, event_for_synchronize,0));
+    // CUDA_EXCEPTION_CHECK(cudaEventSynchronize(event_for_synchronize));
+    //////
+    //////221123 HU
+    //////
     PROF_END(PROF_MPD_SYNCHRONIZE);
+
 
     if(overflow_handling == OVERFLOW_MODE_RELAXED)
 	{

@@ -106,6 +106,7 @@ protected:
     double tau;
     uint32_t overflowTimesteps;
     uint32_t overflowListUses;
+    cudaEvent_t event_for_synchronize; //// 221123HU
 
 #ifdef MPD_GLOBAL_S_MATRIX
 	uint8_t *RLG;	// Device global memory pointer for RL matrix
