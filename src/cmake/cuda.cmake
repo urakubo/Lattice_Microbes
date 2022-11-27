@@ -36,11 +36,10 @@ if (CMAKE_CUDA_COMPILER)
         if (run_result EQUAL 0)
             set(CUDA_GPU_DETECT_OUTPUT ${compute_capabilities}
                 CACHE INTERNAL "Returned GPU architectures from detect_gpus tool" FORCE)
-            set(DETECTED_CUDA_ARCH ${CUDA_GPU_DETECT_OUTPUT})
         else ()
             message(STATUS "Automatic GPU detection failed. Building for common architectures.")
-            set(DETECTED_CUDA_ARCH 30 35 50)
         endif ()
+        set(DETECTED_CUDA_ARCH 60 61 62 70 72 75 80 86 87 89) # CUDA11.8 Modified by HU on 22/11/14
     endif()
 
     set(CUDA_ARCH_LIST "${DETECTED_CUDA_ARCH}" CACHE STRING "CUDA arch to compile code for. Specify a semicolon delimited list, e.g. 35;52")
