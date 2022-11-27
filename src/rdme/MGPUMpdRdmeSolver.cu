@@ -914,7 +914,7 @@ int MGPUMpdRdmeSolver::run_next_timestep(int gpu, uint32_t timestep)
     //////
     //////221123 HU
     //////
-    cudaEvent_t event_for_synchronize=threads[gpu].event_for_synchronize;
+    // cudaEvent_t event_for_synchronize=threads[gpu].event_for_synchronize;
     //////
     //////
     //////
