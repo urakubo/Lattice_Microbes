@@ -911,14 +911,6 @@ int MGPUMpdRdmeSolver::run_next_timestep(int gpu, uint32_t timestep)
 	unsigned int *d_overflows=threads[gpu].d_overflows;	
 	int z_start=0;
 	
-    //////
-    //////221123 HU
-    //////
-    // cudaEvent_t event_for_synchronize=threads[gpu].event_for_synchronize;
-    //////
-    //////
-    //////
-
     dim3 gridSize=threads[gpu].grid_x;
 	dim3 threadBlockSize=threads[gpu].threads_x;
 
@@ -1059,20 +1051,7 @@ int MGPUMpdRdmeSolver::run_next_timestep(int gpu, uint32_t timestep)
 	
     // Wait for the kernels to complete.
     PROF_BEGIN(PROF_MPD_SYNCHRONIZE);
-    //////
-    //CUDA_EXCEPTION_CHECK(cudaStreamSynchronize(cudaStream));
-    //////
-    //////221123 HU
-    //////
-    int gpus=resources->cudaDevices.size();
-    for(int i = 1; i < gpus; i++) CUDA_EXCEPTION_CHECK(cudaEventRecord( threads[i].event_for_synchronize, threads[i].stream1 ));
-    for(int i = 1; i < gpus; i++) CUDA_EXCEPTION_CHECK(cudaStreamWaitEvent(threads[0].stream1, threads[i].event_for_synchronize, 0));
-    CUDA_EXCEPTION_CHECK(cudaEventRecord(threads[0].event_for_synchronize, threads[0].stream1));
-    for(int i = 1; i < gpus; i++) CUDA_EXCEPTION_CHECK(cudaStreamWaitEvent(threads[i].stream1, threads[0].event_for_synchronize, 0));
-
-    //////
-    //////
-    //////
+    CUDA_EXCEPTION_CHECK(cudaStreamSynchronize(cudaStream));
     PROF_END(PROF_MPD_SYNCHRONIZE);
 
     if(overflow_handling == OVERFLOW_MODE_RELAXED)
@@ -1277,17 +1256,6 @@ void* MGPUMpdRdmeSolver::run_thread(int gpu)
     // Create data exchange streams and events
     CUDA_EXCEPTION_CHECK(cudaStreamCreate(&p->stream1));
     CUDA_EXCEPTION_CHECK(cudaStreamCreate(&p->stream2));
-
-    //////
-    //////221123 HU
-    //////
-    CUDA_EXCEPTION_CHECK(cudaEventCreate(&p->event_for_synchronize));
-    //////
-    //////
-    //////
-
-
-
 #ifdef PROF_USE_CUEVENT
     CUDA_EXCEPTION_CHECK(cudaEventCreate(&p->x_finish));
     CUDA_EXCEPTION_CHECK(cudaEventCreate(&p->diffusion_finished));
