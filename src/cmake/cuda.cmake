@@ -39,7 +39,7 @@ if (CMAKE_CUDA_COMPILER)
         else ()
             message(STATUS "Automatic GPU detection failed. Building for common architectures.")
         endif ()
-        set(DETECTED_CUDA_ARCH 60 61 62 70 72 75 80 86 87 89) # CUDA11.8 Modified by HU on 22/11/14
+        set(DETECTED_CUDA_ARCH 60 61 62 70 72 75 80 86 87 89 90) # CUDA12.0 Modified by HU on 23/1/17
     endif()
 
     set(CUDA_ARCH_LIST "${DETECTED_CUDA_ARCH}" CACHE STRING "CUDA arch to compile code for. Specify a semicolon delimited list, e.g. 35;52")
