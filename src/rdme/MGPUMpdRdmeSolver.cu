@@ -1046,11 +1046,17 @@ int MGPUMpdRdmeSolver::run_next_timestep(int gpu, uint32_t timestep)
 	if(aggcopy_r_pack)
 	{
 		zmap->send_tbuf(gpu, timestep, 0, cudaStream);
+		PROF_BEGIN(PROF_MPD_SYNCHRONIZE);
+		CUDA_EXCEPTION_CHECK(cudaStreamSynchronize(cudaStream));
+		PROF_END(PROF_MPD_SYNCHRONIZE);
 		zmap->send_tbuf(gpu, timestep, 1, cudaStream);
 	}
 	else
 	{
 		mapper->schedule_send(gpu, dtmp, timestep, 0, cudaStream);
+		PROF_BEGIN(PROF_MPD_SYNCHRONIZE);
+		CUDA_EXCEPTION_CHECK(cudaStreamSynchronize(cudaStream));
+		PROF_END(PROF_MPD_SYNCHRONIZE);
 		mapper->schedule_send(gpu, dtmp, timestep, 1, cudaStream);
 	}
 	
