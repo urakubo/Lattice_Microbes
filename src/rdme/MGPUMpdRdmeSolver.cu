@@ -1037,6 +1037,11 @@ int MGPUMpdRdmeSolver::run_next_timestep(int gpu, uint32_t timestep)
     if(overflow_handling == OVERFLOW_MODE_RELAXED)
 		mgpumpdrdme_dev::correct_overflows_mgpu<<<dim3(1,1,1), dim3(TUNE_MPD_MAX_PARTICLE_OVERFLOWS,1,1),0,cudaStream>>>(dtmp, d_overflows);
 
+    // Wait for the kernels to complete.
+    PROF_BEGIN(PROF_MPD_SYNCHRONIZE);
+    CUDA_EXCEPTION_CHECK(cudaStreamSynchronize(cudaStream));
+    PROF_END(PROF_MPD_SYNCHRONIZE);
+
 	// send data
 	if(aggcopy_r_pack)
 	{
