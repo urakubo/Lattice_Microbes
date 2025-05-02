@@ -343,7 +343,7 @@ void setVerbosityLevel(int x) { lm::Print::verbosityLevel(x); }
   PyArrayObject* array = (PyArrayObject*) obj;
 
   if (!array) SWIG_fail;
-  $result = SWIG_Python_AppendOutput($result,obj);
+  $result = SWIG_AppendOutput($result,obj);
 }
 
 
@@ -380,7 +380,7 @@ void setVerbosityLevel(int x) { lm::Print::verbosityLevel(x); }
   PyArrayObject* array = (PyArrayObject*) obj;
 
   if (!array) SWIG_fail;
-  $result = SWIG_Python_AppendOutput($result,obj);
+  $result = SWIG_AppendOutput($result,obj);
 }
 
 %typemap(argout)
@@ -392,7 +392,7 @@ void setVerbosityLevel(int x) { lm::Print::verbosityLevel(x); }
   PyArrayObject* array = (PyArrayObject*) obj;
 
   if (!array) SWIG_fail;
-  $result = SWIG_Python_AppendOutput($result,obj);
+  $result = SWIG_AppendOutput($result,obj);
 }
 
 
@@ -771,7 +771,7 @@ namespace cme
   PyArrayObject* array = (PyArrayObject*) obj;
 
   if(!array) SWIG_fail;
-  $result = SWIG_Python_AppendOutput($result, obj);
+  $result = SWIG_AppendOutput($result, obj);
 }
 
 // Type maps for creating a numpy array view of the rates for a specific reaction
@@ -790,7 +790,7 @@ namespace cme
   PyArrayObject* array = (PyArrayObject*)obj;
   
   if(!array) SWIG_fail;
-  $result = SWIG_Python_AppendOutput($result, obj);
+  $result = SWIG_AppendOutput($result, obj);
 }
 
 
